@@ -1,0 +1,59 @@
+{
+  "name": "census-playwright-bdd",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Playwright + Cucumber BDD test automation framework for the Census Special Census Application",
+  "main": "index.js",
+  "scripts": {
+    "bddgen": "bddgen",
+    "test": "cross-env ENV=test bddgen && playwright test",
+    "test:headed": "cross-env ENV=test bddgen && playwright test --headed",
+    "test:debug": "cross-env ENV=dev bddgen && playwright test --debug",
+    "test:ci": "cross-env ENV=test bddgen && playwright test --workers 4",
+    "test:smoke": "cross-env ENV=test bddgen && playwright test --grep @smoke",
+    "test:regression": "cross-env ENV=test bddgen && playwright test --grep @regression",
+    "test:chromium": "cross-env ENV=test bddgen && playwright test --project=chromium",
+    "test:firefox": "cross-env ENV=test bddgen && playwright test --project=firefox",
+    "report": "playwright show-report test-results/html-report",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "build": "tsc",
+    "clean": "rimraf dist test-results .features-gen"
+  },
+  "keywords": [
+    "playwright",
+    "cucumber",
+    "bdd",
+    "typescript",
+    "test-automation",
+    "e2e",
+    "census"
+  ],
+  "author": "SDET Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.8.0",
+    "@faker-js/faker": "^8.4.1",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "playwright": "^1.49.1",
+    "playwright-bdd": "^7.4.0",
+    "prettier": "^3.3.2",
+    "rimraf": "^5.0.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

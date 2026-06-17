@@ -1,0 +1,12 @@
+{
+  "validCensusIDs": [
+    { "q7m": "TEST", "frvr": "0001", "dtcq": "0001", "description": "Primary regression account" },
+    { "q7m": "TEST", "frvr": "0002", "dtcq": "0002", "description": "Secondary regression account" },
+    { "q7m": "TEST", "frvr": "0003", "dtcq": "0003", "description": "Tertiary regression account" }
+  ],
+  "invalidCensusIDs": [
+    { "q7m": "XXXX", "frvr": "XXXX", "dtcq": "XXXX", "description": "Random invalid ID" },
+    { "q7m": "", "frvr": "", "dtcq": "", "description": "Empty Census ID" },
+    { "q7m": "1234", "frvr": "5678", "dtcq": "9012", "description": "Numeric-only invalid ID" }
+  ]
+}

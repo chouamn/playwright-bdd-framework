@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# playwright-bdd generated spec files (regenerated before every run)
+.features-gen/
+
+# Build output
+dist/
+
+# Test artifacts
+test-results/
+tests/reports/
+playwright-report/
+
+# Environment files (contain secrets)
+resources/env/.env.prod
+resources/env/.env.stage
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Playwright state
+.auth/
