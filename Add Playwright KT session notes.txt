@@ -1,0 +1,433 @@
+# Playwright KT Session — Presentation Notes & Team Reference
+
+**Suggested agenda (60 min):**
+1. What is Playwright & why we chose it — 5 min
+2. Key features walkthrough (slides) — 20 min
+3. Live demo — 7 min
+4. Setup & getting started — 10 min
+5. Project anatomy: package.json, config, CLI — 15 min
+6. Q&A / parking lot — 5 min
+
+---
+
+# PART A — Presentation Flow
+
+## Slide 1 — What is Playwright?
+
+**Say this:**
+> "Playwright is an open-source browser automation framework developed by Microsoft. It allows us to automate modern web browsers for end-to-end testing, API testing, and browser automation. One of its biggest advantages is that it provides a single API for Chromium, Firefox, and WebKit."
+
+**Why we chose it:**
+- The ability to run API **and** UI regression tests in the same framework was a big factor in choosing Playwright.
+- Can be used as a library or as a full test framework.
+- Regression testing with Playwright gives us confidence in future software releases — that's the point. We want high-quality releases, and Playwright helps solve that problem.
+
+**Real-life example:**
+> "Imagine you work for Amazon. Every time a new version is deployed, someone would have to manually open the browser, log in, search for a product, add it to the cart, and complete checkout. Playwright automates all of those steps in seconds."
+
+**Feature overview table (show briefly, details come in the next slides):**
+
+| Feature | Real-World Benefit |
+| --- | --- |
+| Cross-browser | One test runs on Chrome, Firefox, and Safari |
+| Multi-language | Works with Java, Python, JavaScript, and C# |
+| Auto-waiting | Reduces flaky tests |
+| Headless/Headed | Fast execution and easy debugging |
+| Powerful Locators | Stable, maintainable tests |
+| Network Interception | Test APIs without a backend |
+| Multiple Contexts | Simulate multiple users |
+| Built-in Test Runner | Parallel execution, screenshots, videos, traces |
+| Mobile Emulation | Test responsive websites on different devices |
+
+---
+
+## Slide 2 — Cross-Browser Support
+
+**Say this:**
+> "One of Playwright's strongest features is cross-browser support. We don't need separate automation frameworks for Chrome, Firefox, and Safari."
+
+**Show this diagram:**
+```
+           One Test
+               │
+     ┌─────────┼─────────┐
+     │         │         │
+ Chromium   Firefox    WebKit
+ (Chrome)  (Firefox)  (Safari)
+```
+
+**Run:**
+```bash
+npx playwright test
+```
+
+**Then show the configuration:**
+```typescript
+projects: [
+  { name: 'chromium' },
+  { name: 'firefox' },
+  { name: 'webkit' }
+]
+```
+
+**Explain:**
+> "I only wrote one test, but Playwright automatically executes it against three different browsers."
+
+---
+
+## Slide 3 — Auto-Waiting (everyone's favorite)
+
+**Say this:**
+> "Traditional Selenium tests often fail because the application is slower than the script."
+
+**Without auto-wait:**
+```
+Click Login → Button isn't loaded → Test Failed
+```
+
+**With Playwright:**
+```
+Click Login → Playwright waits → Button appears → Click succeeds
+```
+
+**Show code:**
+```typescript
+await page.getByRole('button', { name: 'Login' }).click();
+```
+
+**Then ask:**
+> "Did anyone notice that I never used Thread.sleep()?"
+
+(Most people will smile.)
+
+**Then say:**
+> "Playwright automatically waits until the element is visible, stable, enabled, and ready."
+
+---
+
+## Slide 4 — Powerful Locators
+
+**Old Selenium:**
+```java
+driver.findElement(By.xpath(
+"//*[@id='content']/div[2]/div/div[5]/button"));
+```
+
+**Playwright:**
+```typescript
+page.getByRole('button', { name: 'Sign In' });
+```
+
+**Ask the audience:**
+> "Which one would you rather maintain six months from now?"
+
+**Explain accessibility:**
+> "Playwright encourages locating elements the same way users interact with them."
+
+---
+
+## Slide 5 — Headless vs Headed
+
+| Headed | Headless |
+| --- | --- |
+| Chrome opens | No browser window |
+| You watch every action | Runs much faster |
+| Useful for debugging | Perfect for CI/CD |
+
+**Demo:**
+```bash
+npx playwright test            # no browser appears
+npx playwright test --headed   # browser opens
+```
+
+**Tell them:**
+> "Same test. Different execution mode."
+
+---
+
+## Slide 6 — Network Interception
+
+**Normal flow:**
+```
+Browser → API → Database
+```
+
+**Testing flow:**
+```
+Browser → Playwright → Fake API Response
+```
+
+**Example:**
+```typescript
+await page.route('**/users', route =>
+  route.fulfill({
+    json: [{ name: 'John' }]
+  })
+);
+```
+
+**Explain:**
+> "Even if the backend is unavailable, we can continue testing the UI."
+
+---
+
+## Slide 7 — Multiple Browser Contexts
+
+**Tell a story:**
+> "Suppose we're testing Microsoft Teams."
+
+- Browser Context A → **Alice**
+- Browser Context B → **Bob**
+- Alice sends "Hello Bob" → Bob receives "Hello Bob"
+
+**Explain:**
+> "Playwright lets us simulate two completely independent users in the same test."
+
+---
+
+## Slide 8 — Mobile Emulation
+
+**Show:**
+```typescript
+devices['iPhone 15']
+```
+
+**Run:**
+```bash
+npx playwright test --project="Mobile Chrome"
+```
+
+**Desktop vs mobile layout:**
+```
+Desktop:  Home | About | Contact       Mobile:  ☰
+                                                 Home
+                                                 About
+                                                 Contact
+```
+
+**Explain:**
+> "I don't need a physical phone to validate the responsive design."
+
+---
+
+## Slide 9 — Built-in Test Runner & Debugging
+
+Show a failed test, then open:
+```bash
+npx playwright show-report
+npx playwright show-trace trace.zip
+```
+
+**What the trace contains:** screenshot, video, network, console, every click, DOM snapshot.
+
+**Tell them:**
+> "Instead of asking 'What happened?', we replay the test and see exactly where it failed."
+
+(This usually impresses teams because it shortens debugging time.)
+
+---
+
+## Slide 10 — Why Teams Love Playwright (summary)
+
+| Challenge | Playwright Solution |
+| --- | --- |
+| Browser compatibility | One test works across Chrome, Firefox, and Safari |
+| Flaky tests | Auto-waiting improves reliability |
+| Slow execution | Parallel test execution |
+| Hard debugging | Trace Viewer, screenshots, and videos |
+| Responsive testing | Built-in mobile emulation |
+| Backend dependencies | Network mocking and interception |
+| Multiple users | Browser contexts simulate independent sessions |
+
+---
+
+## Live Demo (5–7 minutes)
+
+1. Open the Playwright project.
+2. Run a test in headed mode: `npx playwright test --headed`
+3. Show the same test running on Chromium, Firefox, and WebKit.
+4. Introduce an intentional failure (e.g., change an expected button text).
+5. Run the test again.
+6. Open the HTML report: `npx playwright show-report`
+7. Open the Trace Viewer and replay the failure step by step.
+
+**This one demo showcases:** cross-browser support, auto-waiting, built-in reporting, and the Trace Viewer.
+
+---
+
+## Setup & Getting Started
+
+### Prerequisites
+1. **Node.js** — required for running JavaScript/TypeScript-based projects (available via Software Center). Verify:
+   ```bash
+   node -v
+   npm -v
+   ```
+2. **Visual Studio Code** — recommended editor (available via Software Center), plus the Playwright extension.
+
+### Create the project
+```bash
+mkdir playwright-typescript-demo
+cd playwright-typescript-demo
+npm init -y          # creates package.json
+```
+
+### Install Playwright
+```bash
+npm init playwright@latest
+```
+Prompts you'll see:
+- Where to put your end-to-end tests? → `tests`
+- Add a GitHub Actions workflow? → Yes/No
+- Install Playwright browsers? → Yes
+
+This installs: the Playwright Test Runner, TypeScript support, browser binaries, and configuration files.
+
+**Recap for the team:** we validated Node was installed, initialized a new Playwright TypeScript project, installed the browser dependencies, confirmed the example tests run, and installed VS Code with the Playwright extension.
+
+---
+
+# PART B — Team Reference (share after the session)
+
+## 1. `playwright.config.ts` Deep Dive
+
+*Source: walkthrough of the auto-generated config from `npm init playwright@latest`*
+
+### Big picture
+- Main export is `defineConfig()`.
+- **Top level** = global test runner settings.
+- **`use` block** = browser/context behavior (applies to all tests by default).
+- **`projects`** section can override `use` settings per project; individual tests can override with `test.use()`.
+- Settings cascade: top-level `use` → `projects[].use` → `test.use()`.
+
+### Test runner options (top level)
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `fullyParallel` | `true` | Runs multiple test files in parallel |
+| `retries` | `process.env.CI ? 2 : 0` | Ternary: 2 retries on CI, 0 locally |
+| `workers` | similar CI ternary | Controls parallel worker count |
+| `reporter` | `'html'` | Test report format (deeper session later) |
+| `timeout` | *not set by default* | Recommend adding explicitly: `30_000` (30s) — per-test timeout |
+| `globalTimeout` | *not set by default* | Recommend adding: `10 * 60 * 1000` (10 min) — whole-suite timeout |
+
+**Talking point:** explain the CI ternary simply — "if running in CI, use the first value; otherwise use the second."
+
+**Suggested team tweak:** bump local retries from `0` → `1` so flaky local runs get one automatic retry, and update the inline comment to read "2 retries on CI, 1 locally."
+
+### Recommended `use` block
+
+```ts
+use: {
+  baseURL: 'https://practicesoftwaretesting.com',
+  actionTimeout: 0,
+  ignoreHTTPSErrors: true,
+  trace: 'on',
+  video: 'retain-on-failure',
+  screenshot: 'only-on-failure',
+  headless: true,
+}
+```
+
+- **`baseURL`** — uncomment and set to the test site. Tests can then call `page.goto('/login')` instead of the full URL. Big win for consistency across environments.
+- **`trace: 'on'`** — captures network requests, console logs, and a visual timeline for every test (not just retries). Great while learning/debugging; note that `'on-first-retry'` is a common CI setting to save disk space once the team is comfortable. Trace viewer gets its own future session.
+- **`video: 'retain-on-failure'`** — keeps recordings only for failed tests (saves disk space).
+- **`screenshot: 'only-on-failure'`** — same idea, screenshots only on failure.
+- **`headless: true`** — keeps browser windows from popping up during local/CI runs; override via CLI flag when needed.
+
+### Key takeaways
+1. Config is fully programmable — ternaries and expressions are fair game, not just static values.
+2. Explicit `timeout` / `globalTimeout` values make expectations clear to the whole team and are easy to tune as the suite grows.
+3. `baseURL` + relative paths = less duplication, easier environment switching.
+4. Debug artifacts (trace, video, screenshot) are cheap to turn on and pay off hugely when tests fail in CI.
+5. Settings cascade gives clean handling of browser-specific or team-specific overrides later.
+
+---
+
+## 2. Test Runner CLI
+
+*Source: walkthrough of `npx playwright test` from the VS Code terminal*
+
+### Key rule to lead with
+**CLI flags override whatever is set in `playwright.config.ts`.** You can change behavior at run-time without touching the config — useful for one-off runs, debugging, or CI pipeline flexibility.
+
+### Useful flags & commands
+
+| Command | What it does |
+| --- | --- |
+| `npx playwright test --headed` | Visible browser windows (overrides `headless: true`) |
+| `npx playwright test --project chromium` | Runs only the specified project |
+| `npx playwright test --project chromium --project firefox` | Runs multiple projects (repeat the flag) |
+| `npx playwright test --project "*omium"` | Project name matched via regex/glob — quotes needed because of the `*` (may need escaping depending on OS/shell) |
+| `npx playwright test example.spec.ts` | Runs only the tests in a specific file |
+| `npx playwright test example.spec.ts:10` | Runs only the test starting at that line number |
+| `npx playwright test --grep @first` | Runs only tests tagged `@first` |
+| `npx playwright test --grep-invert @first` | Runs everything **except** tests tagged `@first` |
+
+### Tagging tests
+Tags group tests across files/folders (not just by directory structure). Add a tag as a second argument to `test()`:
+
+```typescript
+test('get started link', { tag: '@first' }, async ({ page }) => {
+  // ...
+});
+```
+
+Then filter with `--grep @first` or `--grep-invert @first`.
+
+### Config note from this walkthrough
+Firefox and WebKit projects were commented out in `playwright.config.ts` to simplify demos, leaving only Chromium active. **Watch for a trailing comma left behind after commenting out array entries — it can break the config.**
+
+### Key takeaways
+1. CLI flags > config file — great for quick overrides without editing code.
+2. You can scope runs to: a browser/project, a file, a line/test, or a tag — in combination if needed.
+3. Regex/glob matching on `--project` adds flexibility for larger project matrices.
+4. Tags + `--grep` / `--grep-invert` are the recommended way to organize cross-cutting groups (smoke, regression, etc.) independent of folder structure.
+5. This CLI knowledge is the foundation for targeted CI/CD pipelines — e.g., "run only Chromium + smoke-tagged tests on every PR, full matrix nightly."
+
+---
+
+## 3. `package.json`
+
+### What it is
+Auto-generated on project init. Think of it as the project's **cookbook** — it lists what packages/versions should be installed into `node_modules`. It's JSON, so manual edits must respect valid JSON syntax.
+
+### The two sections that matter most
+
+**`dependencies`**
+- Lists installed packages and versions (e.g., `@playwright/test`, `@types/node`).
+- To upgrade: change the version number, save, then run `npm install` — e.g., bump to Playwright 1.48 and reinstall.
+- `npm install` also creates/updates `package-lock.json` (exact resolved versions) and populates `node_modules`.
+
+**`scripts`** — aliases for longer CLI commands, run via `npm run <alias>`. Big win for team consistency: everyone (and CI) runs the same command instead of memorizing flag strings.
+
+| Script name | Command | Purpose |
+| --- | --- | --- |
+| `test` | `npx playwright test` | Basic full test run |
+| `test:chromium` | `npx playwright test --project chromium` | Chromium project only |
+| `test:first` | `npx playwright test --grep @first` | Only tests tagged `@first` |
+| `test:local` | `BASE_URL=http://localhost:4200 npx playwright test` | Overrides `baseURL` via env variable for local branch testing |
+| `test:report` | `npx playwright test && npx playwright show-report` | Chains two commands — runs tests, then opens the HTML report |
+| `test:ui` | `npx playwright test --ui` | Shortcut into Playwright's UI mode (great for debugging) |
+
+**Naming convention worth adopting:** the `test:xyz` colon syntax — keeps related scripts grouped and easy to scan.
+
+### Key takeaways
+1. `package.json` isn't just metadata — `scripts` is a real productivity tool for the team and CI.
+2. Version bumps for Playwright (or any dependency) happen here, followed by `npm install`.
+3. Scripts can chain commands (`&&`) — e.g., run tests then auto-open the report.
+4. Scripts can inject environment variables inline (`BASE_URL=...`) — handy for local/branch overrides without touching the config.
+5. A consistent `test:*` naming convention makes scripts self-documenting for new team members and CI authors.
+
+### Ties back to earlier topics
+- `test:local`'s `BASE_URL` override connects directly to the `baseURL` config setting — same concept, set via env var instead of hardcoded.
+- `test:chromium` / `test:first` are saved shortcuts for the exact CLI flags covered above (`--project`, `--grep`).
+
+---
+
+## Parking Lot (future sessions)
+- Reporters deep dive
+- Trace Viewer walkthrough
+- `projects` and multi-browser config
+- Building CI/CD pipeline configs using CLI flags
+- Full list of CLI options (Playwright docs)
